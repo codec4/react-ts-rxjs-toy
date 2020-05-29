@@ -1,31 +1,25 @@
 import React, { useEffect } from 'react'
-import { BehaviorSubject } from 'rxjs'
-import { useSharedState } from 'src/hooks/useSharedState'
-import { Picker, Option } from 'src/components/Picker'
+import {  useService } from 'src/hooks/useService'
+import { Picker } from 'src/components/Picker'
 import { Refresh } from 'src/components/Refresh'
 import { Post } from 'src/components/Post'
 import { LastUpdated } from 'src/components/LastUpdated';
-import { init } from 'src/services/redditService';
-
-export const RedditStateSubject = new BehaviorSubject({
-  isFetching: false,
-  posts: [],
-  lastUpdated: new Date(),
-})
+import { pickerService } from '../../services/pickerService';
+import { redditService, RedditState } from '../../services/redditService';
 
 export const App = () => {
-  const options = [Option.ReactJS, Option.Angular, Option.WebDevelopment]
-  const [{ isFetching, posts }] = useSharedState(RedditStateSubject)
-  const isLoading = isFetching && posts.length === 0
-  const isEmpty = !isFetching && posts.length === 0
+  const [{ isFetching, posts }] = useService<RedditState>(redditService);
+  const isLoading = isFetching && posts.length === 0;
+  const isEmpty = !isFetching && posts.length === 0;
 
   useEffect(() => {
-    init()
-  }, [])
+    const { value } = pickerService.selectAll();
+    redditService.fetchSubreddit(value);
+  }, []);
 
   return (
     <div>
-      <Picker options={options} />
+      <Picker />
       <LastUpdated />
       <Refresh />
       {isLoading && <h2>Loading...</h2>}
@@ -36,5 +30,5 @@ export const App = () => {
         ))}
       </ul>
     </div>
-  )
+  );
 }

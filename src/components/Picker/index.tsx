@@ -1,24 +1,19 @@
-import React from 'react'
-import { BehaviorSubject } from 'rxjs'
-import { useSharedState } from 'src/hooks/useSharedState'
+import React, { useEffect } from 'react'
+import { useService } from 'src/hooks/useService'
+import { pickerService, PickerState } from '../../services/pickerService';
+import { redditService } from '../../services/redditService';
 
-export enum Option {
-  ReactJS = 'reactjs',
-  Angular = 'angular',
-  WebDevelopment = 'webdevelopment',
-}
+export const Picker = () => {
+  const [{ value, options }, setPickerState] = useService<PickerState>(pickerService);
 
-export const PickerStateSubject = new BehaviorSubject({
-  value: Option.ReactJS,
-})
+  useEffect(() => {
+    redditService.fetchSubreddit(value);
+  }, [value]);
 
-export const Picker: React.SFC<{ options: string[] }> = props => {
-  const [{ value }, setState] = useSharedState(PickerStateSubject)
-  const { options } = props
   return (
     <span>
-      <h1>{value || options[0]}</h1>
-      <select onChange={e => setState({ value: e.target.value })}>
+      <h1>{value}</h1>
+      <select onChange={e => setPickerState({ value: e.target.value })}>
         {options.map(o => (
           <option value={o} key={o}>
             {o}
@@ -26,5 +21,5 @@ export const Picker: React.SFC<{ options: string[] }> = props => {
         ))}
       </select>
     </span>
-  )
+  );
 }

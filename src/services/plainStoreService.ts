@@ -9,8 +9,6 @@ import { pluck } from 'rxjs/operators';
 export class PlainStoreService<T> {
   protected state: BehaviorSubject<T>;
 
-  constructor() {  }
-
   /**
    * Returns an observable for a property on the store.
    * This is used when the consumer needs the stream of changes
@@ -32,6 +30,10 @@ export class PlainStoreService<T> {
     return this.state.getValue()[key];
   }
 
+  public selectAll(): T {
+    return this.state.getValue();
+  }
+
   /**
    * This is used to set a new value for a property
    *
@@ -50,10 +52,13 @@ export class PlainStoreService<T> {
    */
   public setState(partialState: Partial<T>): void {
     const currentState = this.state.getValue();
-    // const nextState = Object.assign({}, currentState, partialState);
     const nextState = {...currentState, ...partialState};
 
     this.state.next(nextState);
+  }
+
+  public subscribe(subscription: (s: T) => any) {
+    return this.state.subscribe(subscription);
   }
 }
 

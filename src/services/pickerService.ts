@@ -7,15 +7,19 @@ export enum Option {
   WebDevelopment = 'webdevelopment',
 }
 
-interface PickerState {
+export interface PickerState {
   value: string;
+  options: Option[];
 }
 
-export class PickerService extends PlainStoreService<PickerState> {
+export type TPickerService = PickerService;
+
+class PickerService extends PlainStoreService<PickerState> {
   constructor() {
     super();
     const initialState: PickerState = {
-      value: Option.ReactJS
+      value: Option.ReactJS,
+      options: [Option.ReactJS, Option.Angular, Option.WebDevelopment]
     };
 
     this.state = new BehaviorSubject<PickerState>(initialState);
@@ -25,3 +29,5 @@ export class PickerService extends PlainStoreService<PickerState> {
     this.setState({ value: subreddit });
   }
 }
+
+export const pickerService = new PickerService();

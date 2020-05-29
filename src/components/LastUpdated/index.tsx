@@ -1,8 +1,7 @@
 import React from 'react'
-import { useSharedState } from 'src/hooks/useSharedState'
-import { RedditStateSubject } from 'src/components/app/App'
+import { redditService } from '../../services/redditService';
 
 export const LastUpdated = () => {
-  const [{ lastUpdated }] = useSharedState(RedditStateSubject)
+  const { lastUpdated } = redditService.selectAll();
   return <p>Last updated at {new Date(lastUpdated).toLocaleTimeString()}. </p>
 }
