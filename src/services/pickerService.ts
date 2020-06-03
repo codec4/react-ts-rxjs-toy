@@ -1,10 +1,10 @@
 import { BehaviorSubject } from 'rxjs';
-import { PlainStoreService } from './plainStoreService';
+import { PlainStoreService } from './storeService';
 
 export enum Option {
   ReactJS = 'reactjs',
   Angular = 'angular',
-  WebDevelopment = 'webdevelopment',
+  WebDevelopment = 'webdevelopment'
 }
 
 export interface PickerState {
@@ -14,7 +14,7 @@ export interface PickerState {
 
 export type TPickerService = PickerService;
 
-class PickerService extends PlainStoreService<PickerState> {
+export class PickerService extends PlainStoreService<PickerState> {
   constructor() {
     super();
     const initialState: PickerState = {
@@ -22,7 +22,7 @@ class PickerService extends PlainStoreService<PickerState> {
       options: [Option.ReactJS, Option.Angular, Option.WebDevelopment]
     };
 
-    this.state = new BehaviorSubject<PickerState>(initialState);
+    this.subjectState = new BehaviorSubject<PickerState>(initialState);
   }
 
   changeSubreddit(subreddit: string = 'angular') {

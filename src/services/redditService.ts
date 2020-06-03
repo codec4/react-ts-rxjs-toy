@@ -1,6 +1,7 @@
 import { BehaviorSubject } from 'rxjs';
-import { PlainStoreService } from './plainStoreService';
-import { skip } from 'rxjs/operators';
+import { PlainStoreService } from './storeService';
+import { Axios } from '../module/axiosObservable';
+import { map } from 'rxjs/operators';
 
 export interface RedditState {
   isFetching: boolean;
@@ -16,10 +17,10 @@ class RedditService extends PlainStoreService<RedditState> {
     const initialState: RedditState = {
       isFetching: false,
       posts: [],
-      lastUpdated: new Date(),
+      lastUpdated: new Date()
     };
 
-    this.state = new BehaviorSubject<RedditState>(initialState);
+    this.subjectState = new BehaviorSubject<RedditState>(initialState);
   }
 
   fetchSubreddit(subreddit: string) {
@@ -28,17 +29,21 @@ class RedditService extends PlainStoreService<RedditState> {
       posts: []
     });
 
-    fetch(`https://www.reddit.com/r/${subreddit}.json`)
-      .then(response => response.json())
-      .then((json) => {
-        const { data: { children = [] } = {} } = json
+    Axios.get(`https://www.reddit.com/r/${subreddit}.json`)
+      .pipe(
+        map((response) => {
+          const {
+            data: { children = [] }
+          } = response.data;
 
-        this.setState({
-          isFetching: false,
-          lastUpdated: new Date(),
-          posts: children.map((c: any) => c.data)
-        });
-      });
+          return children.map((c: any) => c.data);
+        })
+      )
+      .subscribe(
+        (posts: any) =>
+          this.setState({ isFetching: false, lastUpdated: new Date(), posts }),
+        (err) => console.log(err)
+      );
   }
 }
 

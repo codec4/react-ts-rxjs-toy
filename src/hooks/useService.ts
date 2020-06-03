@@ -1,18 +1,19 @@
-import { useState, useEffect, Dispatch } from 'react'
-import { PlainStoreService } from 'src/services/plainStoreService'
+import { useState, useEffect } from 'react';
+import { PlainStoreService } from 'src/services/storeService';
 
-export const useService = <State = {}, Service extends PlainStoreService<State> = PlainStoreService<State>>(
+export const useService = <
+  State = {},
+  Service extends PlainStoreService<State> = PlainStoreService<State>
+>(
   service: Service
-): [State, Dispatch<Partial<State>>] => {
-  const [value, setState] = useState(service.selectAll())
+): State => {
+  const [value, setState] = useState(service.getState());
 
   useEffect(() => {
-    const subscription = service.subscribe((s) => setState(s));
+    const subscription = service.subscribe(setState);
     return () => subscription.unsubscribe();
-  /* eslint-disable react-hooks/exhaustive-deps */
+    /* eslint-disable react-hooks/exhaustive-deps */
   }, []);
 
-  const newSetState = (s: Partial<State>) => service.setState(s);
-
-  return [value, newSetState];
-}
+  return value;
+};
